@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
+import { BasePage } from "./base.page";
 
-export class LoginPage {
+export class LoginPage extends BasePage {
   readonly heading: Locator;
   readonly emailInput: Locator;
   readonly passwordInput: Locator;
@@ -9,7 +10,8 @@ export class LoginPage {
   readonly emailInvalidError: Locator;
   readonly passwordRequiredError: Locator;
 
-  constructor(private readonly page: Page) {
+  constructor(page: Page) {
+    super(page);
     this.heading = page.getByRole('heading', { name: 'Welcome Back', exact: true });
     // DOM hiện tại chưa có data-testid và label chưa liên kết với input.
     this.emailInput = page.getByPlaceholder('Enter your email', { exact: true });
@@ -21,7 +23,7 @@ export class LoginPage {
   }
 
   async open(): Promise<void> {
-    await this.page.goto('/auth/login');
+    await this.navigate('/auth/login');
   }
 
   async fillCredentials(email: string, password: string): Promise<void> {
