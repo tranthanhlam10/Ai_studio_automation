@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "types": ["node"],
+    "skipLibCheck": true
+  },
+  "include": ["playwright.config.ts", "config/**/*.ts", "pages/**/*.ts", "components/**/*.ts", "fixtures/**/*.ts", "data/**/*.ts", "utils/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["node_modules", "playwright-report", "test-results", "reports"]
+}

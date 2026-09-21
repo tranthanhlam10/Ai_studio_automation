@@ -1,15 +1,25 @@
 {
   "name": "ai_studio_automation",
   "version": "1.0.0",
-  "description": "",
+  "description": "Playwright TypeScript web UI automation for YouNet Studio",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test",
+    "test:login": "playwright test tests/auth --project=chromium",
+    "test:login:headed": "playwright test tests/auth --project=chromium --headed",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:ui": "playwright test --ui",
+    "typecheck": "tsc --noEmit",
+    "report": "playwright show-report playwright-report"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.63.0",
-    "@types/node": "^22.20.3"
+    "@types/node": "^22.20.3",
+    "dotenv": "17.2.3",
+    "typescript": "5.9.3"
   }
 }
