@@ -1,3 +1,4 @@
+import KeywordFilter from '../components/keyword.filter';
 import {BasePage} from './base.page';
 import type { Locator , Page} from '@playwright/test';
 
@@ -7,6 +8,7 @@ export class KeywordPage extends BasePage   {
   readonly brandTrackingInput: Locator;
   readonly criticalCrisisInput: Locator;
   readonly reloadButton: Locator;
+  readonly keywordFilter: KeywordFilter;
 
 constructor(page: Page) {
     super(page);
@@ -24,6 +26,7 @@ constructor(page: Page) {
       "Critical Crisis Keywords",
     );
     this.reloadButton = page.getByRole('button', { name: 'reload Refresh' });
+    this.keywordFilter = new KeywordFilter(page);
 
   }
 
@@ -34,4 +37,10 @@ constructor(page: Page) {
   async reload(): Promise<void> {
     await this.reloadButton.click();
   }
+
+  async filterByKeyword(): Promise<void> {
+    await this.keywordFilter.filterByKeyword();
+  }
+
+
 }
