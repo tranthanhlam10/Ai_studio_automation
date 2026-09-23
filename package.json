@@ -10,7 +10,12 @@
     "test:smoke": "playwright test --grep @smoke",
     "test:ui": "playwright test --ui",
     "typecheck": "tsc --noEmit",
-    "report": "playwright show-report playwright-report"
+    "report": "playwright show-report playwright-report",
+    "unit": "vitest run",
+    "unit:watch": "vitest",
+    "unit:csv": "vitest run data-providers/csv.provider.test.ts",
+    "unit:google-sheet": "vitest run data-providers/google-sheet.provider.test.ts",
+    "unit:json": "vitest run data-providers/json.provider.test.ts"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +24,9 @@
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "@types/node": "^22.20.3",
+    "csv-parse": "^7.0.2",
     "dotenv": "17.2.3",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "^4.1.11"
   }
 }
