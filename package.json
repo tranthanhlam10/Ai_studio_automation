@@ -15,7 +15,7 @@
     "unit:watch": "vitest",
     "unit:csv": "vitest run data-providers/csv.provider.test.ts",
     "unit:google-sheet": "vitest run data-providers/google-sheet.provider.test.ts",
-    "unit:json": "vitest run data-providers/json.provider.test.ts"
+    "unit:json": "vitest run utils/data-providers/json.providers.test.ts"
   },
   "keywords": [],
   "author": "",
