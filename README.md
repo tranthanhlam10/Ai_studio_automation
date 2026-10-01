@@ -59,6 +59,30 @@ npm run report
 
 `test:ui` mở Playwright UI Mode; `test:login:headed` chạy test với cửa sổ browser.
 
+## Google Sheets và `credentials.json`
+
+Provider `utils/data-providers/ggsheet.providers.ts` đọc Google Sheets bằng OAuth.
+Đặt file OAuth client `credentials.json` tại thư mục gốc dự án, cùng cấp với
+`package.json`. Dùng OAuth client loại **Desktop app** và bật **Google Sheets API**
+trong Google Cloud project theo [hướng dẫn Google](https://developers.google.com/workspace/sheets/api/quickstart/nodejs).
+File chứa thông tin xác thực, chỉ lưu ở máy cá nhân; không đưa nội dung vào README
+hoặc commit lên Git. `credentials.json` đã được khai báo trong `.gitignore`.
+
+Chạy file test bằng Vitest từ thư mục gốc dự án vì provider tìm credential theo
+`process.cwd()`:
+
+```bash
+npm run unit -- utils/data-providers/ggsheet.providers.test.ts
+```
+
+Test gọi Google Sheets thật, cần kết nối mạng và đăng nhập/cấp quyền Google khi
+được yêu cầu. Sheet và vùng dữ liệu hiện được cấu hình trong `spreadsheetId` và
+`range` của provider.
+
+Nếu GitHub chặn push với lỗi **Google OAuth Client Secret** tại `credentials.json`,
+thêm file vào `.gitignore` không xóa secret khỏi các commit đã có. Cần loại bỏ
+secret khỏi các commit bị chặn trước khi push lại.
+
 ## Các test demo
 
 | ID | Nội dung | Cần tài khoản |
