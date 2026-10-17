@@ -24,11 +24,11 @@ export default class CsvProviders {
 
   static getCsvDataByColumn(fileName: string, column: number): string[] {
     /**
-     * Hàm getCsvDataByColumn đọc dữ liệu từ file CSV và trả về một mảng các giá trị của cột được chỉ định.
-     * hàm resolve được sử dụng để tạo đường dẫn tuyệt đối đến file CSV dựa trên __dirname và tên file được cung cấp.
-     * hàm readFileSync được sử dụng để đọc nội dung của file CSV dưới dạng chuỗi UTF-8.
-     * Kết quả trả về của hàm readFileSync được tách thành các dòng bằng cách sử dụng phương thức split("\n").
-     * Và kiểu dữ liệu của hàm readFileSync là string, sau đó mỗi dòng được tách thành các giá trị bằng cách sử dụng phương thức split(",") và lấy giá trị của cột được chỉ định bằng cách sử dụng chỉ số cột.
+     * getCsvDataByColumn reads a CSV file and returns the values from the specified column.
+     * resolve builds an absolute path to the CSV file from __dirname and the supplied name.
+     * readFileSync reads the CSV file as a UTF-8 string.
+     * The returned string is split into rows with split("\n").
+     * Each row is split into values with split(","), then the selected column is read by index.
      */
     const data = fs
       .readFileSync(

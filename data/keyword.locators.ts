@@ -1,13 +1,13 @@
 import type { Page } from '@playwright/test';
 
-/** Locator của màn hình Keyword Management, trạng thái Crawling. */
+/** Locators for the Keyword Management screen in the Crawling state. */
 export const keywordPagePath = '/keyword-management/keywords?keywords.status=crawling';
 
 export function getKeywordLocators(page: Page) {
   const table = page.getByRole('table');
   const dialog = page.getByRole('dialog');
 
-  // React Select không luôn render input hidden; tìm từ nhãn của từng trường.
+  // React Select does not always render a hidden input; locate each field by its label.
   const filterSelect = (label: string) =>
     page.locator('label').filter({ hasText: new RegExp(`^${label}$`) })
       .locator('..').locator('..').locator('input[type="text"]');

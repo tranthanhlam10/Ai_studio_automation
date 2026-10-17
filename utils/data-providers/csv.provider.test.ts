@@ -13,14 +13,14 @@ test("csvProviders.getCsvData", () => {
   const data = CsvProviders.getCsvData("csv-test");
   console.log("Data:", data);
   console.log("Data-type:", typeof data);
-  expect(CsvProviders.getCsvData("csv-test")).toBe("ID,Testname,Data\n1,Test đăng nhập thành công,lamtt\n2,Test đăng nhập thành công,giangnt\n3,Test đăng nhập thành công,nganltk\n");
+  expect(CsvProviders.getCsvData("csv-test")).toBe("ID,Testname,Data\n1,Successful login test,lamtt\n2,Successful login test,giangnt\n3,Successful login test,nganltk\n");
 });
 
 test("csvProviders.getCsvDataByRow", () => { 
   const row1 = CsvProviders.getCsvDataByRow("csv-test", 1);
   console.log("Row 1:", row1);
   console.log("Data-type:", typeof row1);
-  expect(CsvProviders.getCsvDataByRow("csv-test", 1)).toBe("1,Test đăng nhập thành công,lamtt\n");
+  expect(CsvProviders.getCsvDataByRow("csv-test", 1)).toBe("1,Successful login test,lamtt\n");
 });
 
 test("csvProviders.getCsvDataByColumn", () => { 
@@ -34,28 +34,28 @@ test("csvProviders.getCsvDataByColumn", () => {
 //   const column1 = CsvProviders.getCsvDataByColumnAndRow("csv-test", 3, 1);
 //   console.log("Column 1:", column1);
 //   console.log("Data-type:", typeof column1);
-//   expect(CsvProviders.getCsvDataByColumnAndRow("csv-test", 3, 1)).toBe("Test đăng nhập thành công");
+//   expect(CsvProviders.getCsvDataByColumnAndRow("csv-test", 3, 1)).toBe("Successful login test");
 // });
 
 // test("csvProviders.getCsvDataByColumnAndRowWithHeader", () => { 
 //   const column1 = CsvProviders.getCsvDataByColumnAndRowWithHeader("csv-test", "Testname", 1);
 //   console.log("Column 1:", column1);
 //   console.log("Data-type:", typeof column1);
-//   expect(CsvProviders.getCsvDataByColumnAndRowWithHeader("csv-test", "Testname", 1)).toBe("Test đăng nhập thành công");
+//   expect(CsvProviders.getCsvDataByColumnAndRowWithHeader("csv-test", "Testname", 1)).toBe("Successful login test");
 // });
 
 // test("csvProviders.getCsvDataByColumnAndRowWithHeaderAndValue", () => { 
-//   const column1 = CsvProviders.getCsvDataByColumnAndRowWithHeaderAndValue("csv-test", "Testname", "Test đăng nhập thành công", 1);
+//   const column1 = CsvProviders.getCsvDataByColumnAndRowWithHeaderAndValue("csv-test", "Testname", "Successful login test", 1);
 //   console.log("Column 1:", column1);
 //   console.log("Data-type:", typeof column1);
-//   expect(CsvProviders.getCsvDataByColumnAndRowWithHeaderAndValue("csv-test", "Testname", "Test đăng nhập thành công", 1)).toBe("lamtt");
+//   expect(CsvProviders.getCsvDataByColumnAndRowWithHeaderAndValue("csv-test", "Testname", "Successful login test", 1)).toBe("lamtt");
 // });    
 
 test("csvProviders.parseCsvData", () => { 
   const data = CsvProviders.parseCsvData("csv-test");
   console.log("Data:", data);
   console.log("Data-type:", typeof data);
-  expect(CsvProviders.parseCsvData("csv-test")).toEqual([["ID", "Testname", "Data"], ["1", "Test đăng nhập thành công", "lamtt"], ["2", "Test đăng nhập thành công", "giangnt"], ["3", "Test đăng nhập thành công", "nganltk"]]);
+  expect(CsvProviders.parseCsvData("csv-test")).toEqual([["ID", "Testname", "Data"], ["1", "Successful login test", "lamtt"], ["2", "Successful login test", "giangnt"], ["3", "Successful login test", "nganltk"]]);
 });    
 
 

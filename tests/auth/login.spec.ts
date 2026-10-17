@@ -2,13 +2,13 @@ import { test, expect } from "../../fixtures/use-fixtures/test.fixture";
 import { loginData } from "../../data/login.data";
 import { env } from "../../config/env";
 
-test.describe("Studio - Đăng nhập", { tag: ["@ui", "@regression"] }, () => {
+test.describe("Studio - Login", { tag: ["@ui", "@regression"] }, () => {
   test.beforeEach(async ({ loginPage }) => {
     await loginPage.open();
   });
 
   test(
-    "LOGIN-001: Hiển thị form đăng nhập",
+    "LOGIN-001: Display the login form",
     { tag: "@smoke" },
     async ({ loginPage }) => {
       await expect(loginPage.heading).toBeVisible();
@@ -19,7 +19,7 @@ test.describe("Studio - Đăng nhập", { tag: ["@ui", "@regression"] }, () => {
     },
   );
 
-  test("LOGIN-002: Báo lỗi khi bỏ trống email và mật khẩu", async ({
+  test("LOGIN-002: Show errors when email and password are empty", async ({
     loginPage,
     page,
   }) => {
@@ -30,7 +30,7 @@ test.describe("Studio - Đăng nhập", { tag: ["@ui", "@regression"] }, () => {
     await expect(page).toHaveURL(new URL("/auth/login", env.baseURL).href);
   });
 
-  test("LOGIN-003: Báo lỗi khi email sai định dạng", async ({
+  test("LOGIN-003: Show an error for an invalid email format", async ({
     loginPage,
     page,
   }) => {
@@ -41,7 +41,7 @@ test.describe("Studio - Đăng nhập", { tag: ["@ui", "@regression"] }, () => {
     await expect(page).toHaveURL(new URL("/auth/login", env.baseURL).href);
   });
 
-  test("LOGIN-004: Báo lỗi khi chỉ nhập email", async ({ loginPage }) => {
+  test("LOGIN-004: Show an error when only the email is entered", async ({ loginPage }) => {
     await loginPage.login(loginData.validFormatEmail, "");
 
     await expect(loginPage.passwordRequiredError).toBeVisible();
