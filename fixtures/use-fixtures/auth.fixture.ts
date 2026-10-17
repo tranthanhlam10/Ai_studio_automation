@@ -7,12 +7,15 @@ type authFixtures = {
 
 export const test = base.extend<authFixtures>({
   authenticatedPage: async ({ page, loginPage }, use) => {
+    if (!env.hasLoginCredentials) {
+      throw new Error(`Set LOGIN_EMAIL, LOGIN_PASSWORD, and LOGIN_SUCCESS_PATH for ${env.environment}.`);
+    }
     await loginPage.open();
-    await loginPage.fillCredentials("lamtt@younetgroup.com", "Lam@12345");
+    await loginPage.fillCredentials(env.loginEmail, env.loginPassword);
     await loginPage.submit();
 
     await expect(page).toHaveURL(
-      new URL("http://studio-testing.ynm.local/profile/info", env.baseURL).href,
+      new URL(env.loginSuccessPath, env.baseURL).href,
     );
 
     await use();

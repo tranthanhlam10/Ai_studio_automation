@@ -23,13 +23,13 @@ export default class JsonProvider {
 
   validateJsonArrayFile(filePath: string): ValidationResult {
     if (!fs.existsSync(filePath)) {
-      return { valid: false, reason: `Không tìm thấy file: ${filePath}` };
+      return { valid: false, reason: `File not found: ${filePath}` };
     }
 
     const raw = fs.readFileSync(filePath, "utf-8");
 
     if (raw.trim().length === 0) {
-      return { valid: false, reason: `File rỗng: ${filePath}` };
+      return { valid: false, reason: `File is empty: ${filePath}` };
     }
 
     let data: unknown;
@@ -38,19 +38,19 @@ export default class JsonProvider {
     } catch (error) {
       return {
         valid: false,
-        reason: `Sai định dạng JSON: ${(error as Error).message}`,
+        reason: `Invalid JSON format: ${(error as Error).message}`,
       };
     }
 
     if (!Array.isArray(data)) {
       return {
         valid: false,
-        reason: `Dữ liệu không phải mảng JSON, nhận được kiểu: ${typeof data}`,
+        reason: `Expected a JSON array, received: ${typeof data}`,
       };
     }
 
     if (data.length === 0) {
-      return { valid: false, reason: `Mảng JSON rỗng, không có dữ liệu` };
+      return { valid: false, reason: `JSON array is empty` };
     }
 
     return { valid: true, data };

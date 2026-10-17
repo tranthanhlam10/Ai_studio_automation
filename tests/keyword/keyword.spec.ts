@@ -5,7 +5,7 @@ test.describe(
   { tag: ["@ui", "@regression"] },
   () => {
     test(
-      "KEYWORD-001: Kiểm tra xem các element có hoạt động không",
+      "KEYWORD-001: Display the keyword elements",
       { tag: "@smoke" },
       async ({ keywordPage, authenticatedPage }) => {
         await keywordPage.open();
@@ -15,7 +15,7 @@ test.describe(
       },
     );
     test(
-      "KEYWORD-002: Kiểm tra xem click được filterByKeyword không",
+      "KEYWORD-002: Open the keyword filter",
       { tag: "@smoke" },
       async ({ keywordPage, authenticatedPage }) => {
         await keywordPage.open();

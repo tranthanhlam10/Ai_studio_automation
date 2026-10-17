@@ -3,7 +3,7 @@ import { env } from './config/env';
 
 export default defineConfig({
   testDir: './tests',
-  // Giữ starter cũ để tham khảo, chỉ chạy demo của Studio.
+  // Keep the original starter as a reference; run only the Studio tests.
   testIgnore: ['**/example.spec.ts'],
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),

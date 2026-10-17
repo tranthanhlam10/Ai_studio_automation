@@ -1,4 +1,4 @@
-// Chỉ dùng cho validation phía UI, không phải tài khoản thật.
+// Used only for UI validation, not a real account.
 export const loginData = {
   invalidEmail: 'invalid-email',
   validFormatEmail: 'qa-demo@example.com',

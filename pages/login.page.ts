@@ -13,7 +13,7 @@ export class LoginPage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.heading = page.getByRole('heading', { name: 'Welcome Back', exact: true });
-    // DOM hiện tại chưa có data-testid và label chưa liên kết với input.
+    // The current DOM has no data-testid, and labels are not associated with inputs.
     this.emailInput = page.getByPlaceholder('Enter your email', { exact: true });
     this.passwordInput = page.getByPlaceholder('Enter your password', { exact: true });
     this.signInButton = page.getByRole('button', { name: 'Sign in', exact: true });

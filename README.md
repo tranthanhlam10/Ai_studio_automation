@@ -1,33 +1,17 @@
 # Studio Web Automation
 
-Playwright + TypeScript, chỉ kiểm thử web UI tại `http://studio-testing.ynm.local/auth/login`.
-Dùng Page Object Model và Playwright Test Fixtures. Chưa có API client hoặc API tests.
+This repository contains TypeScript UI tests for YouNet Studio. It uses Playwright Test, page objects, and fixtures. The current suites cover login and basic Keyword Management checks. CSV, JSON, and Google Sheets data providers are also present, but they are separate from the Playwright UI suites.
 
-## Cấu trúc
+## Requirements
 
-```text
-tests/auth/login.spec.ts       # Kịch bản và assertion login
-tests/auth/login-success.spec.ts # Demo login thành công, cần cấu hình tài khoản
-pages/login.page.ts            # Locator và thao tác trên màn hình login
-fixtures/test.fixture.ts      # Inject LoginPage vào từng test
-data/login.data.ts             # Input demo, không chứa tài khoản thật
-config/env.ts                  # Đọc .env và validate cấu hình
-components/                    # Chỗ cho component dùng chung khi cần
-utils/                         # Chỗ cho hàm thuần dùng chung khi cần
-playwright.config.ts           # Browser, timeout, retry, report
-tsconfig.json                  # TypeScript strict
-.env.example                   # Cấu hình mẫu
-playwright-report/             # HTML report được sinh sau khi chạy
-reports/junit.xml              # JUnit report
-test-results/                  # Trace, video, screenshot khi thất bại
-```
+- Node.js 22 or newer and npm.
+- Chromium installed through Playwright.
+- Network access to the selected Studio environment. The testing host uses an internal `.ynm.local` domain and normally requires the appropriate network or VPN.
+- A test account for authenticated tests. The login validation tests do not require one.
 
-`tests/example.spec.ts` và `e2e/example.spec.ts` là starter đã có sẵn, được giữ nguyên.
-Config bỏ qua `tests/example.spec.ts`; thư mục `e2e/` nằm ngoài `testDir`.
+## Install and run
 
-## Cài đặt và chạy
-
-Yêu cầu Node.js 22+ và kết nối mạng nội bộ/VPN có thể truy cập domain `.ynm.local`.
+From the repository root:
 
 ```bash
 npm ci
@@ -36,87 +20,127 @@ npm run typecheck
 npm run test:login
 ```
 
-Không cần `.env` để chạy các test validation: URL mặc định đã được cấu hình.
-Để thay URL hoặc chạy test tài khoản hợp lệ:
+`npm run test:login` selects the testing environment by default. It runs the four login UI and validation tests without credentials. `LOGIN-005` is skipped until all three login variables are set.
+
+## Choose an environment
+
+Set `TEST_ENV` for each run. Supported values are `testing` and `staging`.
+
+| `TEST_ENV` | Default base URL | Local configuration file |
+| --- | --- | --- |
+| `testing` (default) | `http://studio-testing.ynm.local/` | `.env.testing` |
+| `staging` | `https://studio-staging.younetmedia.com/` | `.env.staging` |
+
+```bash
+npm run test:login
+TEST_ENV=staging npm run test:login
+TEST_ENV=staging npm run test:login -- --grep LOGIN-001
+```
+
+The commands above use POSIX shell syntax, including macOS `zsh`. `config/env.ts` loads the file for the selected environment. For testing only, it then loads the legacy `.env` file for values that were not set in `.env.testing`. Staging never loads `.env`.
+
+Shell and CI environment variables take precedence over values in the local files. `BASE_URL` can override the default URL, for example when a CI job targets another host. Keep the selected `TEST_ENV`, `BASE_URL`, and account credentials consistent with one another.
+
+## Configure an account for authenticated tests
+
+Add these values to `.env.testing` or `.env.staging`, depending on the target environment:
+
+```dotenv
+LOGIN_EMAIL=your-test-account@example.com
+LOGIN_PASSWORD=your-test-password
+LOGIN_SUCCESS_PATH=/actual/path/after/login
+```
+
+`LOGIN_SUCCESS_PATH` must be an internal path beginning with `/`, must differ from `/auth/login`, and must match the actual destination after login. Include its query string or fragment if the application uses one. Set all three variables together; partial configuration stops the test run with an error. Without them, `LOGIN-005` is skipped, while the Keyword Management tests fail because their authentication fixture needs an account.
+
+For a legacy testing setup, you can copy `.env.example` to `.env` and fill in the values there:
 
 ```bash
 cp .env.example .env
 ```
 
-Điền cả `LOGIN_EMAIL`, `LOGIN_PASSWORD`, `LOGIN_SUCCESS_PATH` trong `.env`.
-`LOGIN_SUCCESS_PATH` là đường dẫn chính xác sau khi đăng nhập thành công, gồm query/hash
-nếu ứng dụng có sử dụng. Chưa có thông tin thực tế nên project không đoán đường dẫn này.
-Biến môi trường từ shell/CI được ưu tiên hơn `.env`.
+Local `.env` files and `credentials.json` are ignored by Git. Do not commit real credentials or put them in test data, logs, or test titles.
+
+## Run Playwright tests
+
+| Command | What it runs |
+| --- | --- |
+| `npm run test:login` | Login suite in Chromium |
+| `npm run test:login:headed` | Login suite with a visible Chromium window |
+| `npm run test:login -- --grep LOGIN-003` | One login test by ID |
+| `npm run test:smoke` | Tests tagged `@smoke` |
+| `npm test` | All tests in `tests/` |
+| `npm run test:ui` | Playwright UI Mode |
+| `npx playwright test --list` | List discovered tests without opening the site |
+
+Prefix any command with `TEST_ENV=staging` to target staging, for example:
 
 ```bash
-npm run test:login:headed
-npm run test:smoke
-npm run test:ui
-npm run test:login -- --grep LOGIN-003
-npm run test:login -- --grep LOGIN-005
+TEST_ENV=staging npm run test:smoke
+TEST_ENV=staging npm test
+```
+
+The smoke suite includes Keyword Management tests, so it needs login credentials. For a credential-free smoke check, run the login form test directly:
+
+```bash
+npm run test:login -- --grep LOGIN-001
+```
+
+Playwright discovers seven tests in `tests/`: five login tests and two Keyword Management tests. The starter file in `e2e/` is outside Playwright's configured `testDir`, and `example.spec.ts` is ignored.
+
+### Current UI coverage
+
+| ID | Check | Account required |
+| --- | --- | --- |
+| LOGIN-001 | Login form fields and button are visible; password input is masked | No |
+| LOGIN-002 | Required-field errors appear when email and password are empty | No |
+| LOGIN-003 | Invalid email format is rejected | No |
+| LOGIN-004 | Missing password is reported when only an email is entered | No |
+| LOGIN-005 | A valid login reaches `LOGIN_SUCCESS_PATH` and leaves the login form | Yes |
+| KEYWORD-001 | Keyword Management summary elements are visible | Yes |
+| KEYWORD-002 | The keyword filter opens and its Apply control is visible | Yes |
+
+The Keyword tests currently check visibility and opening the filter; they do not verify that filtering changes results. `LOGIN-005` checks the destination URL and disappearance of login controls. A stable element visible only after login would make its success assertion stronger.
+
+## Reports and artifacts
+
+Playwright writes an HTML report to `playwright-report/`, JUnit output to `reports/junit.xml`, and failure artifacts to `test-results/`. Open the HTML report after a run with:
+
+```bash
 npm run report
 ```
 
-`test:ui` mở Playwright UI Mode; `test:login:headed` chạy test với cửa sổ browser.
+By default, Playwright retains traces and videos on failure and takes screenshots on failure. The `LOGIN-005` spec disables traces, videos, and screenshots because it uses account credentials. Each test starts with a fresh browser context; no saved login state is reused.
 
-## Google Sheets và `credentials.json`
-
-Provider `utils/data-providers/ggsheet.providers.ts` đọc Google Sheets bằng OAuth.
-Đặt file OAuth client `credentials.json` tại thư mục gốc dự án, cùng cấp với
-`package.json`. Dùng OAuth client loại **Desktop app** và bật **Google Sheets API**
-trong Google Cloud project theo [hướng dẫn Google](https://developers.google.com/workspace/sheets/api/quickstart/nodejs).
-File chứa thông tin xác thực, chỉ lưu ở máy cá nhân; không đưa nội dung vào README
-hoặc commit lên Git. `credentials.json` đã được khai báo trong `.gitignore`.
-
-Chạy file test bằng Vitest từ thư mục gốc dự án vì provider tìm credential theo
-`process.cwd()`:
+## Type checking and data providers
 
 ```bash
-npm run unit -- utils/data-providers/ggsheet.providers.test.ts
+npm run typecheck
+npm run unit:json
 ```
 
-Test gọi Google Sheets thật, cần kết nối mạng và đăng nhập/cấp quyền Google khi
-được yêu cầu. Sheet và vùng dữ liệu hiện được cấu hình trong `spreadsheetId` và
-`range` của provider.
+`npm run unit:json` runs the JSON provider tests. The repository also contains CSV and Google Sheets provider tests under `utils/data-providers/`. The current `unit:csv` and `unit:google-sheet` package scripts point to paths that do not exist. Run individual files with `npm run unit -- <path>` if you are working on those providers.
 
-Nếu GitHub chặn push với lỗi **Google OAuth Client Secret** tại `credentials.json`,
-thêm file vào `.gitignore` không xóa secret khỏi các commit đã có. Cần loại bỏ
-secret khỏi các commit bị chặn trước khi push lại.
+The full `npm run unit` command currently discovers Playwright specs as Vitest files, and the CSV and Google Sheets provider tests have additional failures. It is not a passing project-wide check at present.
 
-## Các test demo
+The Google Sheets provider uses OAuth and looks for `credentials.json` in the repository root. Its test also requires Google Sheets API access and currently has an authentication implementation issue. Keep OAuth credentials local; do not commit them. The spreadsheet ID and range are currently hardcoded in `utils/data-providers/ggsheet.providers.ts`.
 
-| ID | Nội dung | Cần tài khoản |
-| --- | --- | --- |
-| LOGIN-001 | Form, input, nút Sign in hiển thị; mật khẩu được che | Không |
-| LOGIN-002 | Bỏ trống email và mật khẩu | Không |
-| LOGIN-003 | Email sai định dạng | Không |
-| LOGIN-004 | Chỉ nhập email, thiếu mật khẩu | Không |
-| LOGIN-005 | Login hợp lệ chuyển đến URL cấu hình và rời form login | Có |
+## Project layout
 
-LOGIN-005 được skip có lý do khi cả ba biến login để trống. Cấu hình thiếu một phần
-sẽ báo lỗi để tránh hiểu nhầm là đã kiểm tra đăng nhập thành công.
-Sau khi biết trang đích thực tế, nên bổ sung assertion cho một phần tử chỉ xuất hiện
-khi đã đăng nhập (ví dụ menu tài khoản) vào LOGIN-005.
+```text
+config/env.ts                          Environment selection and validation
+playwright.config.ts                  Browser, timeout, retry, and report settings
+tests/auth/                           Login UI tests
+tests/keyword/                        Keyword Management UI tests
+pages/                                Page objects and navigation
+components/                           Reusable UI components
+fixtures/use-fixtures/                Page object and authentication fixtures
+data/                                 UI test data and locator definitions
+utils/data-providers/                 CSV, JSON, and Google Sheets providers
+docs/                                 Architecture, conventions, and review notes
+.env.example                          Example local testing configuration
+```
 
-Các test validation dùng dữ liệu giả, không thử mật khẩu sai trên tài khoản thật.
-Không thêm test thông báo sai tài khoản vì chưa xác minh nội dung lỗi đó.
+## CI notes
 
-## Locator và quy ước
-
-- DOM thực tế chưa có `data-testid`; label chưa liên kết bằng `for`/`id`.
-- Dùng placeholder `Enter your email`, `Enter your password` và role button `Sign in`.
-- Error text thực tế: `Email address is required`, `Email address is invalid`, `Password is required`.
-- Test chứa assertion; page object chỉ chứa locator và hành động.
-- Dùng fixture, mỗi test có browser context mới; riêng suite login luôn bắt đầu chưa đăng nhập.
-- Không dùng sleep, XPath hoặc CSS phụ thuộc layout.
-- File dùng `kebab-case`, class dùng `PascalCase`, biến/hàm dùng `camelCase`.
-
-## Report và credential
-
-HTML: `npm run report`. Khi validation fail, xem trace/video/screenshot trong report.
-Suite sử dụng tài khoản thật tắt trace/video/screenshot để tránh ghi credential.
-Không ghi credential vào test title hoặc log. `.env`, session và output đều được gitignore.
-Không cần `storageState` tái sử dụng ở demo login vì chính thao tác login đang được kiểm thử.
-
-Workflow GitHub Actions có sẵn vẫn dùng runner công cộng. Domain nội bộ cần runner
-có network/DNS phù hợp; chưa thêm GitLab CI vì phạm vi hiện tại chỉ là cấu trúc và demo login.
+`.github/workflows/playwright.yml` runs `npx playwright test` on a GitHub hosted runner. The default testing host is internal, and the full suite requires account credentials. Configure a runner with network access and provide the relevant environment secrets before treating that workflow as a reliable end-to-end gate.
